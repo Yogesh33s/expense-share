@@ -1,7 +1,9 @@
 import json
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from datetime import datetime
+from collections import defaultdict
 from .validator import ValidationResult, Anomaly
+from .transformer import TransformedExpense
 
 class ImportReportGenerator:
     """Generates import reports in JSON and Markdown formats"""
@@ -10,7 +12,7 @@ class ImportReportGenerator:
         self.report_timestamp = datetime.now()
 
     def generate_import_report(self, validation_results: List[ValidationResult],
-                             transformed_expenses: List[Any] = None,
+                             transformed_expenses: List[TransformedExpense] = None,
                              import_stats: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         Generate a comprehensive import report
@@ -26,7 +28,7 @@ class ImportReportGenerator:
         if import_stats is None:
             import_stats = {}
 
-        # Calculate statistics
+        # Calculate basic statistics
         total_rows = len(validation_results)
         valid_count = sum(1 for r in validation_results if r.is_valid)
         invalid_count = total_rows - valid_count
@@ -66,6 +68,18 @@ class ImportReportGenerator:
                     'issues': row_issues
                 })
 
+        # Calculate expense statistics if we have transformed expenses
+        expense_stats = {}
+        user_stats = {}
+        currency_stats = defaultdict(float)
+        split_type_stats = defaultdict(int)
+
+        if transformed_expenses:
+            expense_stats = self._calculate_expense_statistics(transformed_expenses)
+            user_stats = self._calculate_user_statistics(transformed_expenses)
+            currency_stats = self._calculate_currency_statistics(transformed_expenses)
+            split_type_stats = self._calculate_split_type_statistics(transformed_expenses)
+
         # Build the report
         report = {
             'import_metadata': {
@@ -75,6 +89,10 @@ class ImportReportGenerator:
                 'invalid_rows': invalid_count,
                 'success_rate': (valid_count / total_rows * 100) if total_rows > 0 else 0
             },
+            'expense_statistics': expense_stats,
+            'user_statistics': user_stats,
+            'currency_statistics': dict(currency_stats),
+            'split_type_statistics': dict(split_type_stats),
             'anomaly_summary': {
                 'by_severity': anomaly_counts,
                 'by_type': anomaly_type_counts,
@@ -86,6 +104,77 @@ class ImportReportGenerator:
         }
 
         return report
+
+    def _calculate_expense_statistics(self, expenses: List[TransformedExpense]) -> Dict[str, Any]:
+        """Calculate statistics about expenses"""
+        if not expenses:
+            return {}
+
+        amounts = [abs(exp.amount) for exp in expenses if exp.amount is not None]
+        base_amounts = [exp.amount_base_currency for exp in expenses if exp.amount_base_currency is not None]
+
+        return {
+            'total_expenses': len(expenses),
+            'total_amount': sum(amounts),
+            'average_amount': sum(amounts) / len(amounts) if amounts else 0,
+            'median_amount': sorted(amounts)[len(amounts)//2] if amounts else 0,
+            'min_amount': min(amounts) if amounts else 0,
+            'max_amount': max(amounts) if amounts else 0,
+            'total_base_currency_amount': sum(base_amounts),
+            'average_base_currency_amount': sum(base_amounts) / len(base_amounts) if base_amounts else 0,
+            'settlement_count': sum(1 for exp in expenses if exp.is_settlement),
+            'regular_expense_count': sum(1 for exp in expenses if not exp.is_settlement)
+        }
+
+    def _calculate_user_statistics(self, expenses: List[TransformedExpense]) -> Dict[str, Any]:
+        """Calculate statistics about users"""
+        if not expenses:
+            return {}
+
+        # Who paid the most
+        payer_totals = defaultdict(float)
+        for exp in expenses:
+            if exp.paid_by and exp.amount is not None:
+                payer_totals[exp.paid_by] += abs(exp.amount)
+
+        # Who appears most in splits
+        split_counts = defaultdict(int)
+        for exp in expenses:
+            for split in exp.splits:
+                split_counts[split['user_name']] += 1
+
+        top_payer = max(payer_totals.items(), key=lambda x: x[1]) if payer_totals else None
+        most_appeared = max(split_counts.items(), key=lambda x: x[1]) if split_counts else None
+
+        return {
+            'unique_payers': len(payer_totals),
+            'unique_users_in_splits': len(split_counts),
+            'top_payer_by_amount': {
+                'user': top_payer[0] if top_payer else None,
+                'amount': top_payer[1] if top_payer else 0
+            } if top_payer else {},
+            'most_frequent_in_splits': {
+                'user': most_appeared[0] if most_appeared else None,
+                'count': most_appeared[1] if most_appeared else 0
+            } if most_appeared else {},
+            'payer_totals': dict(payer_totals)
+        }
+
+    def _calculate_currency_statistics(self, expenses: List[TransformedExpense]) -> Dict[str, float]:
+        """Calculate currency usage statistics"""
+        currency_totals = defaultdict(float)
+        for exp in expenses:
+            if exp.currency and exp.amount is not None:
+                currency_totals[exp.currency.upper()] += abs(exp.amount)
+        return dict(currency_totals)
+
+    def _calculate_split_type_statistics(self, expenses: List[TransformedExpense]) -> Dict[str, int]:
+        """Calculate split type usage statistics"""
+        split_type_counts = defaultdict(int)
+        for exp in expenses:
+            if exp.split_type:
+                split_type_counts[exp.split_type.lower()] += 1
+        return dict(split_type_counts)
 
     def generate_json_report(self, report_data: Dict[str, Any]) -> str:
         """
@@ -123,6 +212,48 @@ class ImportReportGenerator:
         md_lines.append(f"- **Invalid Rows:** {report_data['import_metadata']['invalid_rows']}")
         md_lines.append(f"- **Success Rate:** {report_data['import_metadata']['success_rate']:.2f}%")
         md_lines.append("")
+
+        # Expense Statistics
+        if report_data.get('expense_statistics'):
+            stats = report_data['expense_statistics']
+            md_lines.append("## Expense Statistics")
+            md_lines.append(f"- **Total Expenses:** {stats.get('total_expenses', 0)}")
+            md_lines.append(f"- **Total Amount:** {stats.get('total_amount', 0):.2f}")
+            md_lines.append(f"- **Average Expense:** {stats.get('average_amount', 0):.2f}")
+            md_lines.append(f"- **Median Expense:** {stats.get('median_amount', 0):.2f}")
+            md_lines.append(f"- **Expense Range:** {stats.get('min_amount', 0):.2f} - {stats.get('max_amount', 0):.2f}")
+            md_lines.append(f"- **Total in Base Currency (INR):** {stats.get('total_base_currency_amount', 0):.2f}")
+            md_lines.append(f"- **Settlements:** {stats.get('settlement_count', 0)}")
+            md_lines.append(f"- **Regular Expenses:** {stats.get('regular_expense_count', 0)}")
+            md_lines.append("")
+
+        # User Statistics
+        if report_data.get('user_statistics'):
+            stats = report_data['user_statistics']
+            md_lines.append("## User Statistics")
+            md_lines.append(f"- **Unique Payers:** {stats.get('unique_payers', 0)}")
+            md_lines.append(f"- **Unique Users in Splits:** {stats.get('unique_users_in_splits', 0)}")
+            if stats.get('top_payer_by_amount'):
+                top = stats['top_payer_by_amount']
+                md_lines.append(f"- **Top Payer:** {top['user']} (paid {top['amount']:.2f})")
+            if stats.get('most_frequent_in_splits'):
+                freq = stats['most_frequent_in_splits']
+                md_lines.append(f"- **Most Frequent in Splits:** {freq['user']} (appeared {freq['count']} times)")
+            md_lines.append("")
+
+        # Currency Statistics
+        if report_data.get('currency_statistics'):
+            md_lines.append("## Currency Statistics")
+            for currency, amount in sorted(report_data['currency_statistics'].items()):
+                md_lines.append(f"- **{currency}:** {amount:.2f}")
+            md_lines.append("")
+
+        # Split Type Statistics
+        if report_data.get('split_type_statistics'):
+            md_lines.append("## Split Type Statistics")
+            for split_type, count in sorted(report_data['split_type_statistics'].items()):
+                md_lines.append(f"- **{split_type.title()}:** {count}")
+            md_lines.append("")
 
         # Anomaly Summary
         md_lines.append("## Anomaly Summary")

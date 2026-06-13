@@ -5,6 +5,7 @@ import unittest
 import os
 import sys
 import tempfile
+import json
 from datetime import datetime
 
 # Add the src directory to the path so we can import modules
@@ -12,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from src.importer.csvParser import CSVParser, ParsedExpense
 from src.importer.validator import ExpenseValidator, ValidationResult, Anomaly
-from src.importer.transformer import ExpenseTransformer
+from src.importer.transformer import ExpenseTransformer, TransformedExpense
 from src.importer.reportGenerator import ImportReportGenerator
 from src.importer.importService import ImportService
 
@@ -365,6 +366,81 @@ class TestImportReportGenerator(unittest.TestCase):
         self.assertIn('detailed_anomalies', report_data)
         self.assertEqual(report_data['anomaly_summary']['total_anomalies'], 1)
 
+    def test_generate_enhanced_report(self):
+        """Test generation of enhanced report with expense statistics"""
+        # Create sample transformed expenses
+        expense1 = TransformedExpense(
+            description="Test expense 1",
+            paid_by="Aisha",
+            amount=1000.0,
+            currency="INR",
+            exchange_rate=1.0,
+            amount_base_currency=1000.0,
+            date=datetime(2026, 2, 1),
+            split_type="equal",
+            notes="",
+            is_settlement=False,
+            paid_by_name="Aisha",
+            split_with_names=["Aisha", "Rohan"],
+            splits=[
+                {'user_name': 'Aisha', 'share_amount': 500.0, 'share_percentage': 50.0, 'share_count': 1.0},
+                {'user_name': 'Rohan', 'share_amount': 500.0, 'share_percentage': 50.0, 'share_count': 1.0}
+            ],
+            original_row_number=2,
+            raw_data={}
+        )
+
+        expense2 = TransformedExpense(
+            description="Test expense 2",
+            paid_by="Rohan",
+            amount=500.0,
+            currency="USD",
+            exchange_rate=83.0,
+            amount_base_currency=41500.0,
+            date=datetime(2026, 2, 2),
+            split_type="percentage",
+            notes="",
+            is_settlement=False,
+            paid_by_name="Rohan",
+            split_with_names=["Rohan", "Priya"],
+            splits=[
+                {'user_name': 'Rohan', 'share_amount': 250.0, 'share_percentage': 50.0, 'share_count': None},
+                {'user_name': 'Priya', 'share_amount': 250.0, 'share_percentage': 50.0, 'share_count': None}
+            ],
+            original_row_number=3,
+            raw_data={}
+        )
+
+        validation_results = [
+            ValidationResult(is_valid=True, anomalies=[]),
+            ValidationResult(is_valid=True, anomalies=[])
+        ]
+
+        report_data = self.generator.generate_import_report(
+            validation_results=validation_results,
+            transformed_expenses=[expense1, expense2]
+        )
+
+        # Check that enhanced statistics are present
+        self.assertIn('expense_statistics', report_data)
+        self.assertIn('user_statistics', report_data)
+        self.assertIn('currency_statistics', report_data)
+        self.assertIn('split_type_statistics', report_data)
+
+        # Check specific values
+        expense_stats = report_data['expense_statistics']
+        self.assertEqual(expense_stats['total_expenses'], 2)
+        self.assertAlmostEqual(expense_stats['total_amount'], 1500.0)  # 1000 + 500
+        self.assertAlmostEqual(expense_stats['total_base_currency_amount'], 42500.0)  # 1000 + 41500
+
+        currency_stats = report_data['currency_statistics']
+        self.assertAlmostEqual(currency_stats['INR'], 1000.0)
+        self.assertAlmostEqual(currency_stats['USD'], 500.0)
+
+        split_type_stats = report_data['split_type_statistics']
+        self.assertEqual(split_type_stats['equal'], 1)
+        self.assertEqual(split_type_stats['percentage'], 1)
+
     def test_save_reports(self):
         """Test saving reports to files"""
         # Create minimal report data
@@ -403,7 +479,6 @@ class TestImportReportGenerator(unittest.TestCase):
 
             # Check JSON content
             with open(saved_json, 'r') as f:
-                import json
                 loaded_data = json.load(f)
                 self.assertEqual(loaded_data['import_metadata']['total_rows_processed'], 10)
 
