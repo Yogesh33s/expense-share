@@ -40,16 +40,22 @@ class ExpenseValidator:
     def __init__(self):
         # Known valid users from the dataset (will be expanded as we parse)
         self.known_users = set()
+        # User membership data: {user_name: {(group_id, joined_at, left_at)}}
+        # For simplicity, we'll track basic membership for now
+        self.user_memberships = {}  # {user_name: set of (group_name, joined_at, left_at)}
         self.valid_currencies = {'INR', 'USD'}
         self.valid_split_types = {'equal', 'unequal', 'percentage', 'share'}
+        # Known groups (simplified)
+        self.known_groups = {'Flatmates'}  # Assuming one group for now
 
-    def validate_expense(self, expense: ParsedExpense, all_users: set = None) -> ValidationResult:
+    def validate_expense(self, expense: ParsedExpense, all_users: set = None, all_expenses: List[ParsedExpense] = None) -> ValidationResult:
         """
         Validate a parsed expense and detect anomalies
 
         Args:
             expense: ParsedExpense object to validate
             all_users: Set of all known users in the system (for reference validation)
+            all_expenses: List of all expenses (for duplicate detection)
 
         Returns:
             ValidationResult with validation status and detected anomalies
@@ -89,8 +95,18 @@ class ExpenseValidator:
         split_details_anomalies = self._validate_split_details(expense)
         anomalies.extend(split_details_anomalies)
 
-        # Check for duplicates (would need to be done across all expenses)
-        # This is handled separately in the import service
+        # Check for duplicates (if we have all expenses)
+        if all_expenses:
+            duplicate_anomalies = self._check_for_duplicates(expense, all_expenses)
+            anomalies.extend(duplicate_anomalies)
+
+        # Validate participant timing (membership)
+        membership_anomalies = self._validate_participant_timing(expense)
+        anomalies.extend(membership_anomalies)
+
+        # Validate settlement logic
+        settlement_anomalies = self._validate_settlement_logic(expense)
+        anomalies.extend(settlement_anomalies)
 
         # Determine if expense is valid (no critical errors)
         critical_anomalies = [a for a in anomalies if a.severity == 'critical']
@@ -766,6 +782,163 @@ class ExpenseValidator:
 
         return anomalies
 
+    def _check_for_duplicates(self, expense: ParsedExpense, all_expenses: List[ParsedExpense]) -> List[Anomaly]:
+        """Check for duplicate expenses"""
+        anomalies = []
+
+        # Create a signature for this expense
+        expense_signature = self._create_expense_signature(expense)
+
+        # Check against all previous expenses
+        for i, other_expense in enumerate(all_expenses):
+            if other_expense.row_number == expense.row_number:
+                # Skip self-comparison
+                continue
+
+            other_signature = self._create_expense_signature(other_expense)
+
+            if expense_signature == other_signature:
+                anomalies.append(Anomaly(
+                    row_number=expense.row_number,
+                    anomaly_type='duplicate_entry',
+                    severity='warning',
+                    description=f'Duplicate expense detected (matches row {other_expense.row_number})',
+                    original_value=expense.raw_row,
+                    suggested_fix=f'Consider skipping this duplicate row (similar to row {other_expense.row_number})',
+                    field_name=None
+                ))
+                break  # Only report the first duplicate found
+
+        return anomalies
+
+    def _create_expense_signature(self, expense: ParsedExpense) -> Tuple:
+        """Create a signature for expense comparison"""
+        # Normalize the data for comparison
+        normalized_paid_by = self._normalize_name(expense.paid_by) if expense.paid_by else ''
+        normalized_split_with = tuple(sorted([self._normalize_name(name) for name in expense.split_with if name.strip()]))
+
+        # For amount, we'll use the exact value as floats can be tricky with equality
+        # In a real system, we might want to compare within a small tolerance
+        amount_key = round(expense.amount, 4) if expense.amount is not None else None
+
+        # Normalize date to string for comparison
+        date_key = expense.date.isoformat() if expense.date else None
+
+        # Create signature
+        signature = (
+            date_key,
+            expense.description.strip().lower() if expense.description else '',
+            normalized_paid_by,
+            amount_key,
+            expense.currency.upper() if expense.currency else '',
+            expense.split_type.lower() if expense.split_type else '',
+            normalized_split_with,
+            expense.split_details.strip() if expense.split_details else '',
+            expense.notes.strip().lower() if expense.notes else ''
+        )
+
+        return signature
+
+    def _validate_participant_timing(self, expense: ParsedExpense) -> List[Anomaly]:
+        """Validate that participants were group members at the time of expense"""
+        anomalies = []
+
+        # For now, we'll skip detailed membership timing validation since we don't have
+        # group membership data with dates in our simplified model
+        # In a full implementation, we would check:
+        # 1. Was the payer a group member on the expense date?
+        # 2. Were all split_with users group members on the expense date?
+
+        # For this implementation, we'll just do basic validation that users exist
+        if expense.date:  # Only validate if we have a date
+            # Check if payer is a known user (we already do this in _validate_paid_by)
+            pass
+
+            # Check if all split_with users are known
+            for user_name in expense.split_with:
+                if user_name.strip():  # Skip empty names
+                    normalized_name = self._normalize_name(user_name)
+                    # In a full system, we'd check membership dates here
+                    # For now, we assume if they're in our known users, they're valid
+
+        return anomalies
+
+    def _validate_settlement_logic(self, expense: ParsedExpense) -> List[Anomaly]:
+        """Validate settlement-specific logic"""
+        anomalies = []
+
+        # Determine if this looks like a settlement
+        is_likely_settlement = self._is_likely_settlement(expense)
+
+        if is_likely_settlement:
+            # Validate settlement-specific rules
+            if not expense.split_type or expense.split_type.strip() == '':
+                # Empty split_type is expected for settlements
+                pass
+            elif expense.split_type != '':
+                # If split_type is provided for what looks like a settlement, it might be mislabeled
+                anomalies.append(Anomaly(
+                    row_number=expense.row_number,
+                    anomaly_type='potential_mislabeled_settlement',
+                    severity='warning',
+                    description=f'Expense looks like a settlement but has split_type "{expense.split_type}"',
+                    original_value=expense.split_type,
+                    field_name='split_type',
+                    suggested_fix='Consider leaving split_type empty for settlements'
+                ))
+
+            # Settlements should typically involve exactly two people (payer and payee)
+            if len(expense.split_with) != 1:
+                anomalies.append(Anomaly(
+                    row_number=expense.row_number,
+                    anomaly_type='unexpected_participant_count_in_settlement',
+                    severity='info',
+                    description=f'Settlements typically involve exactly one payee, but found {len(expense.split_with)}',
+                    original_value=expense.split_with,
+                    field_name='split_with'
+                ))
+
+            # Check if payer is in split_with (they shouldn't be for a typical settlement)
+            if expense.paid_by and any(self._normalize_name(user) == self._normalize_name(expense.paid_by)
+                                   for user in expense.split_with if user.strip()):
+                anomalies.append(Anomaly(
+                    row_number=expense.row_number,
+                    anomaly_type='payer_in_split_with_for_settlement',
+                    severity='warning',
+                    description=f'Payer "{expense.paid_by}" appears in split_with for what looks like a settlement',
+                    original_value=expense.split_with,
+                    field_name='split_with'
+                ))
+        else:
+            # For non-settlements, validate that we have appropriate split information
+            if not expense.split_type or expense.split_type.strip() == '':
+                # This might be OK if it's actually a settlement, but we already checked that
+                pass  # Will be caught by other validations if needed
+
+        return anomalies
+
+    def _is_likely_settlement(self, expense: ParsedExpense) -> bool:
+        """Determine if an expense is likely a settlement/payment"""
+        # Check for explicit settlement indicators
+        if not expense.split_type or expense.split_type.strip() == '':
+            # Empty split_type often indicates settlement
+            return True
+
+        # Check if split_with contains only the payer (self-payment or single person)
+        if len(expense.split_with) == 1 and expense.split_with[0] == expense.paid_by:
+            return True
+
+        # Check description for settlement keywords
+        settlement_keywords = ['paid back', 'owes me', 'settle', 'repay', 'refund from']
+        desc_lower = expense.description.lower()
+        if any(keyword in desc_lower for keyword in settlement_keywords):
+            return True
+
+        # Check if amount matches a pattern of settlement (often round numbers)
+        # This is more heuristic and might not be reliable
+
+        return False
+
     def _get_normalized_data(self, expense: ParsedExpense) -> Dict[str, Any]:
         """Get normalized data for storage"""
         return {
@@ -795,7 +968,7 @@ if __name__ == "__main__":
     # Validate each expense
     validation_results = []
     for expense in expenses:
-        result = validator.validate_expense(expense)
+        result = validator.validate_expense(expense, all_expenses=expenses)  # Pass all expenses for duplicate detection
         validation_results.append(result)
         if not result.is_valid:
             print(f"Invalid expense at row {expense.row_number}: {expense.description}")

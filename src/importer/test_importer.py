@@ -155,11 +155,95 @@ class TestExpenseValidator(unittest.TestCase):
         info_anomalies = [a for a in result.anomalies if a.severity == 'info' and a.anomaly_type == 'negative_amount_refund']
         self.assertGreaterEqual(len(info_anomalies), 1)
 
-class TestExpenseTransformer(unittest.TestCase):
-    """Test cases for ExpenseTransformer"""
+    def test_duplicate_detection(self):
+        """Test duplicate expense detection"""
+        expense1 = ParsedExpense(
+            raw_row={'date': '2026-02-01', 'description': 'Test', 'paid_by': 'Aisha', 'amount': '1000', 'currency': 'INR', 'split_type': 'equal', 'split_with': 'Aisha;Rohan', 'split_details': '', 'notes': ''},
+            row_number=2,
+            date=datetime(2026, 2, 1),
+            description="Test",
+            paid_by="Aisha",
+            amount=1000.0,
+            currency="INR",
+            split_type="equal",
+            split_with=["Aisha", "Rohan"],
+            split_details="",
+            notes=""
+        )
 
-    def setUp(self):
-        self.transformer = ExpenseTransformer()
+        expense2 = ParsedExpense(
+            raw_row={'date': '2026-02-01', 'description': 'Test', 'paid_by': 'Aisha', 'amount': '1000', 'currency': 'INR', 'split_type': 'equal', 'split_with': 'Aisha;Rohan', 'split_details': '', 'notes': ''},
+            row_number=5,
+            date=datetime(2026, 2, 1),
+            description="Test",
+            paid_by="Aisha",
+            amount=1000.0,
+            currency="INR",
+            split_type="equal",
+            split_with=["Aisha", "Rohan"],
+            split_details="",
+            notes=""
+        )
+
+        # Test with both expenses
+        all_expenses = [expense1, expense2]
+        result1 = self.validator.validate_expense(expense1, all_expenses=all_expenses)
+        result2 = self.validator.validate_expense(expense2, all_expenses=all_expenses)
+
+        # At least one should have a duplicate warning
+        duplicate_anomalies1 = [a for a in result1.anomalies if a.anomaly_type == 'duplicate_entry']
+        duplicate_anomalies2 = [a for a in result2.anomalies if a.anomaly_type == 'duplicate_entry']
+
+        self.assertTrue(len(duplicate_anomalies1) > 0 or len(duplicate_anomalies2) > 0,
+                       "At least one expense should be flagged as duplicate")
+
+    def test_settlement_validation(self):
+        """Test settlement validation"""
+        # Test likely settlement with empty split_type
+        expense = ParsedExpense(
+            raw_row={},
+            row_number=2,
+            date=datetime(2026, 2, 1),
+            description="Rohan paid Aisha back",
+            paid_by="Rohan",
+            amount=5000.0,
+            currency="INR",
+            split_type="",  # Empty split_type
+            split_with=["Aisha"],  # Only the payee
+            split_details="",
+            notes="this is a settlement not an expense??"
+        )
+
+        validation = self.validator.validate_expense(expense)
+        # Should not have critical errors for being a settlement
+        critical_anomalies = [a for a in validation.anomalies if a.severity == 'critical']
+        self.assertEqual(len(critical_anomalies), 0)
+
+        # Should have info about settlement detection or be valid
+        # (The exact behavior depends on implementation details)
+
+    def test_percentage_validation(self):
+        """Test percentage validation"""
+        # Test percentage over 100%
+        expense = ParsedExpense(
+            raw_row={},
+            row_number=2,
+            date=datetime(2026, 2, 1),
+            description="Test expense",
+            paid_by="Aisha",
+            amount=1000.0,
+            currency="INR",
+            split_type="percentage",
+            split_with=["Aisha", "Rohan"],
+            split_details="Aisha 60%; Rohan 50%",  # sums to 110%
+            notes=""
+        )
+
+        validation = self.validator.validate_expense(expense)
+        # Should have a warning about percentage sum not being 100
+        percentage_warnings = [a for a in validation.anomalies
+                              if a.anomaly_type == 'percentage_sum_not_100' and a.severity == 'warning']
+        self.assertGreaterEqual(len(percentage_warnings), 1)
 
     def test_transform_equal_split(self):
         """Test transformation of equal split expense"""
@@ -180,7 +264,8 @@ class TestExpenseTransformer(unittest.TestCase):
         # Create a valid validation result
         validation = ValidationResult(is_valid=True, anomalies=[])
 
-        transformed = self.transformer.transform_expense(expense, validation)
+        transformer = ExpenseTransformer()
+        transformed = transformer.transform_expense(expense, validation)
 
         self.assertEqual(transformed.description, "Test expense")
         self.assertEqual(transformed.paid_by, "Aisha")
@@ -213,7 +298,8 @@ class TestExpenseTransformer(unittest.TestCase):
         )
 
         validation = ValidationResult(is_valid=True, anomalies=[])
-        transformed = self.transformer.transform_expense(expense, validation)
+        transformer = ExpenseTransformer()
+        transformed = transformer.transform_expense(expense, validation)
 
         self.assertEqual(len(transformed.splits), 3)
         # Check Aisha's split (50%)
@@ -245,7 +331,8 @@ class TestExpenseTransformer(unittest.TestCase):
         )
 
         validation = ValidationResult(is_valid=True, anomalies=[])
-        transformed = self.transformer.transform_expense(expense, validation)
+        transformer = ExpenseTransformer()
+        transformed = transformer.transform_expense(expense, validation)
 
         # Should be detected as a settlement
         self.assertTrue(transformed.is_settlement)

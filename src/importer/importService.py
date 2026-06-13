@@ -72,8 +72,9 @@ class ImportService:
             # Step 2: Validate expenses
             print(f"Validating {len(parsed_expenses)} expenses...")
             validation_results = []
-            for expense in parsed_expenses:
-                validation_result = self.validator.validate_expense(expense)
+            # Validate each expense, passing all expenses for duplicate detection
+            for i, expense in enumerate(parsed_expenses):
+                validation_result = self.validator.validate_expense(expense, all_expenses=parsed_expenses)
                 validation_results.append(validation_result)
             result['validation_results'] = validation_results
 
