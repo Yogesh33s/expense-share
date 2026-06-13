@@ -1,10 +1,52 @@
 {
   "import_metadata": {
-    "timestamp": "2026-06-13T20:07:01.100398",
+    "timestamp": "2026-06-13T20:52:01.423407",
     "total_rows_processed": 42,
     "valid_rows": 41,
     "invalid_rows": 1,
     "success_rate": 97.61904761904762
+  },
+  "expense_statistics": {
+    "total_expenses": 41,
+    "total_amount": 272620.995,
+    "average_amount": 6649.292560975609,
+    "median_amount": 2340.0,
+    "min_amount": 0.0,
+    "max_amount": 48000.0,
+    "total_base_currency_amount": 338548.995,
+    "average_base_currency_amount": 8257.29256097561,
+    "settlement_count": 0,
+    "regular_expense_count": 41
+  },
+  "user_statistics": {
+    "unique_payers": 6,
+    "unique_users_in_splits": 7,
+    "top_payer_by_amount": {
+      "user": "Aisha",
+      "amount": 201070.0
+    },
+    "most_frequent_in_splits": {
+      "user": "Aisha",
+      "count": 40
+    },
+    "payer_totals": {
+      "Aisha": 201070.0,
+      "Priya": 16200.0,
+      "Rohan": 17130.995,
+      "Dev": 7120.0,
+      "Meera": 11010.0,
+      "Sam": 20090.0
+    }
+  },
+  "currency_statistics": {
+    "INR": 271816.995,
+    "USD": 804.0
+  },
+  "split_type_statistics": {
+    "equal": 36,
+    "unequal": 1,
+    "percentage": 2,
+    "share": 2
   },
   "anomaly_summary": {
     "by_severity": {

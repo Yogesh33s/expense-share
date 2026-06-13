@@ -1,11 +1,37 @@
 # Import Report
-**Generated:** 2026-06-13T20:07:01.100398
+**Generated:** 2026-06-13T20:52:01.423407
 
 ## Summary
 - **Total Rows Processed:** 42
 - **Valid Rows:** 41
 - **Invalid Rows:** 1
 - **Success Rate:** 97.62%
+
+## Expense Statistics
+- **Total Expenses:** 41
+- **Total Amount:** 272620.99
+- **Average Expense:** 6649.29
+- **Median Expense:** 2340.00
+- **Expense Range:** 0.00 - 48000.00
+- **Total in Base Currency (INR):** 338548.99
+- **Settlements:** 0
+- **Regular Expenses:** 41
+
+## User Statistics
+- **Unique Payers:** 6
+- **Unique Users in Splits:** 7
+- **Top Payer:** Aisha (paid 201070.00)
+- **Most Frequent in Splits:** Aisha (appeared 40 times)
+
+## Currency Statistics
+- **INR:** 271816.99
+- **USD:** 804.00
+
+## Split Type Statistics
+- **Equal:** 36
+- **Percentage:** 2
+- **Share:** 2
+- **Unequal:** 1
 
 ## Anomaly Summary
 ### By Severity
