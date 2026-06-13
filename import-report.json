@@ -1,0 +1,149 @@
+{
+  "import_metadata": {
+    "timestamp": "2026-06-13T20:07:01.100398",
+    "total_rows_processed": 42,
+    "valid_rows": 41,
+    "invalid_rows": 1,
+    "success_rate": 97.61904761904762
+  },
+  "anomaly_summary": {
+    "by_severity": {
+      "critical": 1,
+      "error": 1,
+      "warning": 3,
+      "info": 1
+    },
+    "by_type": {
+      "missing_paid_by": 1,
+      "percentage_sum_not_100": 2,
+      "negative_amount_refund": 1,
+      "invalid_date_format": 1,
+      "zero_amount": 1
+    },
+    "total_anomalies": 6
+  },
+  "detailed_anomalies": [
+    {
+      "row_number": 13,
+      "anomaly_type": "missing_paid_by",
+      "severity": "critical",
+      "description": "Paid by field is empty",
+      "original_value": "",
+      "suggested_fix": null,
+      "field_name": "paid_by"
+    },
+    {
+      "row_number": 15,
+      "anomaly_type": "percentage_sum_not_100",
+      "severity": "warning",
+      "description": "Percentage sum is 110.0%, expected 100%",
+      "original_value": "Aisha 30%; Rohan 30%; Priya 30%; Meera 20%",
+      "suggested_fix": "Adjust percentages to sum to 100%",
+      "field_name": "split_details"
+    },
+    {
+      "row_number": 26,
+      "anomaly_type": "negative_amount_refund",
+      "severity": "info",
+      "description": "Expense amount is negative (refund)",
+      "original_value": -30.0,
+      "suggested_fix": null,
+      "field_name": "amount"
+    },
+    {
+      "row_number": 27,
+      "anomaly_type": "invalid_date_format",
+      "severity": "error",
+      "description": "Could not parse date",
+      "original_value": "Mar 14",
+      "suggested_fix": null,
+      "field_name": "date"
+    },
+    {
+      "row_number": 31,
+      "anomaly_type": "zero_amount",
+      "severity": "warning",
+      "description": "Expense amount is zero",
+      "original_value": 0.0,
+      "suggested_fix": null,
+      "field_name": "amount"
+    },
+    {
+      "row_number": 32,
+      "anomaly_type": "percentage_sum_not_100",
+      "severity": "warning",
+      "description": "Percentage sum is 110.0%, expected 100%",
+      "original_value": "Aisha 30%; Rohan 30%; Priya 30%; Meera 20%",
+      "suggested_fix": "Adjust percentages to sum to 100%",
+      "field_name": "split_details"
+    }
+  ],
+  "rows_with_issues": [
+    {
+      "row_number": 13,
+      "issues": [
+        {
+          "type": "missing_paid_by",
+          "severity": "critical",
+          "description": "Paid by field is empty"
+        }
+      ]
+    },
+    {
+      "row_number": 15,
+      "issues": [
+        {
+          "type": "percentage_sum_not_100",
+          "severity": "warning",
+          "description": "Percentage sum is 110.0%, expected 100%"
+        }
+      ]
+    },
+    {
+      "row_number": 26,
+      "issues": [
+        {
+          "type": "negative_amount_refund",
+          "severity": "info",
+          "description": "Expense amount is negative (refund)"
+        }
+      ]
+    },
+    {
+      "row_number": 27,
+      "issues": [
+        {
+          "type": "invalid_date_format",
+          "severity": "error",
+          "description": "Could not parse date"
+        }
+      ]
+    },
+    {
+      "row_number": 31,
+      "issues": [
+        {
+          "type": "zero_amount",
+          "severity": "warning",
+          "description": "Expense amount is zero"
+        }
+      ]
+    },
+    {
+      "row_number": 32,
+      "issues": [
+        {
+          "type": "percentage_sum_not_100",
+          "severity": "warning",
+          "description": "Percentage sum is 110.0%, expected 100%"
+        }
+      ]
+    }
+  ],
+  "import_statistics": {
+    "processing_duration_ms": 0,
+    "parser_version": "1.0",
+    "validation_rules_applied": 9,
+    "base_currency": "INR"
+  }
+}
