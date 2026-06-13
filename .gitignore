@@ -2,6 +2,8 @@
 Assignment_Analysis.md
 Milestones.md
 report.txt
+PROJECT_STATE.md
+committed_version.md
 
 # Claude Code settings
 .claude/
@@ -29,3 +31,12 @@ yarn.lock
 # Environment variables
 .env
 .env.*
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+*.py[cod]
+*$py.class
