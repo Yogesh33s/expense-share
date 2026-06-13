@@ -1,0 +1,31 @@
+# Personal tracking files - not part of assignment deliverables
+Assignment_Analysis.md
+Milestones.md
+report.txt
+
+# Claude Code settings
+.claude/
+
+# Provided input data
+expenses_export.csv
+
+# OS artifacts
+.DS_Thumbs.db
+Desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Package files (will be generated during setup)
+node_modules/
+package-lock.json
+yarn.lock
+.pnp/
+.pnp.js
+
+# Environment variables
+.env
+.env.*
