@@ -14,7 +14,7 @@ const Register = () => {
   const { register } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.prevent();
+    e.preventDefault();
     setError('');
     setLoading(true);
 
