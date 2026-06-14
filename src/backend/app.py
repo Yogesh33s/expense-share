@@ -5,11 +5,11 @@ from flask import Flask
 from flask_cors import CORS
 import os
 from src.backend.models.database import db
-from src.backend.routes.auth import auth_bp
-from src.backend.routes.groups import groups_bp
-from src.backend.routes.expenses import expenses_bp
-from src.backend.routes.imports import imports_bp
-from src.backend.routes.balances import balances_bp
+from src.backend.controllers.auth_controller import auth_bp
+from src.backend.controllers.groups_controller import groups_bp
+from src.backend.controllers.expenses_controller import expenses_bp
+from src.backend.controllers.imports_controller import imports_bp
+from src.backend.controllers.balances_controller import balances_bp
 
 def create_app(config_name=None):
     """Application factory pattern"""

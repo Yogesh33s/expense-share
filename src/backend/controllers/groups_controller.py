@@ -10,13 +10,9 @@ import os
 groups_bp = Blueprint('groups', __name__)
 
 def verify_token(token):
-    """Verify token and return user_id (simplified)"""
-    # In production, this would validate a JWT token
-    # For now, we'll just return a dummy user_id for demonstration
-    # This is not secure - in production use proper JWT validation
-    if token == "demo-token":
-        return 1  # Assume user ID 1 for demo
-    return None
+    """Verify token and return user_id"""
+    from src.backend.services.auth_service import AuthService
+    return AuthService.verify_token(token)
 
 def require_auth(f):
     """Decorator to require authentication"""

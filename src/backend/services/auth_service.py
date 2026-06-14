@@ -5,10 +5,17 @@ from src.backend.models import User
 from src.backend.models.database import db
 import hashlib
 import secrets
+import jwt
 from datetime import datetime, timedelta
+import os
 
 class AuthService:
     """Authentication service for user registration and login"""
+
+    # JWT Configuration
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'your-jwt-secret-key-change-in-production'
+    JWT_ALGORITHM = 'HS256'
+    JWT_EXPIRATION_MINUTES = 60  # Token valid for 60 minutes
 
     @staticmethod
     def hash_password(password):
@@ -54,15 +61,24 @@ class AuthService:
 
     @staticmethod
     def generate_token(user_id):
-        """Generate a simple token for authentication (in production, use JWT)"""
-        # This is a simplified token for demonstration
-        # In production, use proper JWT tokens with expiration
-        payload = f"{user_id}:{secrets.token_hex(32)}:{datetime.utcnow().timestamp()}"
-        return hashlib.sha256(payload.encode()).hexdigest()
+        """Generate a JWT token for authentication"""
+        payload = {
+            'user_id': user_id,
+            'exp': datetime.utcnow() + timedelta(minutes=AuthService.JWT_EXPIRATION_MINUTES),
+            'iat': datetime.utcnow()
+        }
+        return jwt.encode(payload, AuthService.JWT_SECRET_KEY, algorithm=AuthService.JWT_ALGORITHM)
 
     @staticmethod
     def verify_token(token):
-        """Verify a token (simplified implementation)"""
-        # In production, you would decode and validate JWT tokens
-        # This is just a placeholder
-        return None  # Would return user_id if valid
+        """Verify a JWT token and return user_id if valid"""
+        try:
+            # Decode the token
+            payload = jwt.decode(token, AuthService.JWT_SECRET_KEY, algorithms=[AuthService.JWT_ALGORITHM])
+            return payload['user_id']
+        except jwt.ExpiredSignatureError:
+            # Token has expired
+            return None
+        except jwt.InvalidTokenError:
+            # Token is invalid
+            return None
