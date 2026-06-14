@@ -22,7 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          /* Protected routes - require authentication */
+          {/* Protected routes - require authentication */}
           <Route
             path="/"
             element={
@@ -40,7 +40,7 @@ function App() {
             }
           />
 
-          /* Placeholder routes for other pages */
+          {/* Placeholder routes for other pages */}
           <Route
             path="/groups"
             element={
@@ -90,7 +90,7 @@ function App() {
             }
           />
 
-          /* Redirect unknown routes to login */
+          {/* Redirect unknown routes to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>

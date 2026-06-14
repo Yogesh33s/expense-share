@@ -7,9 +7,9 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState(''); // For registration flow toggle
-  [error, setError] = useState('');
-  [loading, setLoading] = useState(false);
-  [isRegister, setIsRegister] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
   const navigate = useNavigate();
   const { login, register, loading: authLoading } = useAuth();
 
