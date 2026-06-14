@@ -8,8 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Groups from './pages/Groups';
 import GroupDetail from './pages/GroupDetail';
 import Expenses from './pages/Expenses';
-// Import other pages as they are created
-// import Import from './pages/Import';
+import Import from './pages/Import';
 // import Balances from './pages/Balances';
 
 function App() {
@@ -68,10 +67,7 @@ function App() {
             path="/import"
             element={
               <ProtectedRoute>
-                <div>
-                  <h1>CSV Import</h1>
-                  <p>Import page coming soon...</p>
-                </div>
+                <Import />
               </ProtectedRoute>
             }
           />
