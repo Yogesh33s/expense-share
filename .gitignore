@@ -40,3 +40,9 @@ yarn.lock
 __pycache__
 *.py[cod]
 *$py.class
+
+# Test files
+test_auth.py
+
+# Instance folder (contains SQLite database)
+instance/
