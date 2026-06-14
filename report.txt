@@ -148,3 +148,39 @@ Start Milestone 8 - Testing
 
 ==================================================
 ==================================================
+DATE/TIME
+=========2026-06-14 19:00:00
+
+Milestone: Phase 8 - Testing
+Status: IN PROGRESS
+
+Backend Testing:
+✅ python src/backend/test_backend.py - PASSED
+✅ python src/importer/test_importer.py - PASSED
+✅ Backend startup and health endpoint - PASSED (after fixing import path issue)
+
+Frontend Testing:
+✅ npm run build - PASSED (all routes compile, no missing imports)
+
+Bug Found:
+Backend startup import path issue
+
+Root Cause:
+When running src/backend/app.py directly, Python could not find the src.backend.* modules because the expense-share directory (containing the src package) was not in the Python path. The src/backend/app.py file uses absolute imports like "from src.backend.models.database import db" which requires the expense-share directory to be in sys.path so that src can be recognized as a top-level package.
+
+Fix:
+Added the following lines to src/backend/app.py before the imports:
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+This adds the expense-share directory (two levels up from app.py) to the Python path, allowing the src.backend.* imports to resolve correctly.
+
+Result:
+All tests pass and backend starts successfully.
+
+Next Planned Task:
+Continue with API integration testing (register, login, groups, expenses, import, balances endpoints)
+
+==================================================
+==================================================

@@ -1,9 +1,14 @@
 """
 Main Flask application file
 """
+import sys
+import os
 from flask import Flask
 from flask_cors import CORS
-import os
+
+# Add the src directory to the Python path so we can import src.backend.* modules
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
 from src.backend.models.database import db
 from src.backend.controllers.auth_controller import auth_bp
 from src.backend.controllers.groups_controller import groups_bp
