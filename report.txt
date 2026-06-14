@@ -161,14 +161,16 @@ Backend Testing:
 
 Frontend Testing:
 ✅ npm run build - PASSED (all routes compile, no missing imports)
+✅ npm run dev - PASSED (frontend serves content without React runtime errors)
 
-Bug Found:
-Backend startup import path issue
+Bugs Found:
+1. Backend startup import path issue
+2. Missing frontend dependency: react-router-dom
 
-Root Cause:
+Root Cause 1:
 When running src/backend/app.py directly, Python could not find the src.backend.* modules because the expense-share directory (containing the src package) was not in the Python path. The src/backend/app.py file uses absolute imports like "from src.backend.models.database import db" which requires the expense-share directory to be in sys.path so that src can be recognized as a top-level package.
 
-Fix:
+Fix 1:
 Added the following lines to src/backend/app.py before the imports:
 import sys
 import os
@@ -176,8 +178,14 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 This adds the expense-share directory (two levels up from app.py) to the Python path, allowing the src.backend.* imports to resolve correctly.
 
+Root Cause 2:
+The frontend package.json did not include react-router-dom as a dependency, but App.jsx was importing BrowserRouter, Routes, Route, and Navigate from 'react-router-dom'. This caused a module resolution failure leading to React runtime errors: "Invalid hook call. Cannot read properties of null (reading 'useRef')" at BrowserRouter.
+
+Fix 2:
+Installed the missing dependency: npm install react-router-dom
+
 Result:
-All tests pass and backend starts successfully.
+All tests pass, backend starts successfully, frontend serves content without errors.
 
 API Integration Testing:
 ✅ Authentication: Register, Login, Protected routes
