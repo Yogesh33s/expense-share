@@ -5,8 +5,9 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Groups from './pages/Groups';
+import GroupDetail from './pages/GroupDetail';
 // Import other pages as they are created
-// import Groups from './pages/Groups';
 // import Expenses from './pages/Expenses';
 // import Import from './pages/Import';
 // import Balances from './pages/Balances';
@@ -43,10 +44,15 @@ function App() {
             path="/groups"
             element={
               <ProtectedRoute>
-                <div>
-                  <h1>Groups Management</h1>
-                  <p>Groups page coming soon...</p>
-                </div>
+                <Groups />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/groups/:groupId"
+            element={
+              <ProtectedRoute>
+                <GroupDetail />
               </ProtectedRoute>
             }
           />

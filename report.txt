@@ -1,0 +1,281 @@
+==================================================
+DATE/TIME
+=========2026-06-14 10:30:00
+
+Milestone: Phase 6 - Backend APIs
+Status: COMPLETE
+
+Completed Tasks:
+- Implemented proper JWT-based authentication system
+- Updated AuthService with JWT token generation and verification
+- Fixed all controllers to use proper JWT verification instead of demo-token
+- Fixed app.py imports to point to controllers instead of routes
+- Added PyJWT to requirements.txt
+- Verified all backend tests pass
+- Verified importer tests still pass
+- Created and ran specific JWT authentication test
+- Verified all expected API endpoints are present and secured
+- Authentication API: COMPLETE
+- JWT Authentication: COMPLETE
+- Group CRUD APIs: COMPLETE
+- Expense CRUD APIs: COMPLETE
+- Import APIs: COMPLETE
+- Balance APIs: COMPLETE
+- Backend startup: COMPLETE
+- Route registration: COMPLETE
+- Backend tests: COMPLETE
+- Authentication tests: COMPLETE
+
+Files Added:
+- None (modified existing files)
+
+Files Modified:
+- src/backend/services/auth_service.py
+- src/backend/controllers/auth_controller.py
+- src/backend/controllers/groups_controller.py
+- src/backend/controllers/expenses_controller.py
+- src/backend/controllers/imports_controller.py
+- src/backend/controllers/balances_controller.py
+- src/backend/app.py
+- requirements.txt
+
+Tests Run:
+- python src/backend/test_backend.py (PASSED)
+- python src/importer/test_importer.py (PASSED)
+- python test_auth.py (PASSED)
+
+Git Commit:
+- feat: complete backend api implementation
+
+Next Planned Task:
+- Begin Milestone 7 – Frontend UI
+
+Untracked Files Handled:
+- Added test_auth.py to .gitignore (development test script)
+- Added instance/ directory to .gitignore (contains SQLite database)
+
+==================================================
+==================================================
+DATE/TIME
+=========2026-06-14 11:15:00
+
+Milestone: Phase 7 - Frontend UI
+Status: Planning
+
+Frontend Architecture Decision:
+- Selected: React + Vite frontend with Flask REST API backend
+- Rejected: Flask server-rendered templates (Jinja2 + Vanilla JS)
+- Documented in: DECISIONS.md
+
+Frontend Implementation Plan:
+1. Setup React/Vite project structure
+2. Implement authentication pages (Login, Register) with JWT flow
+3. Create dashboard with balances overview and quick stats
+4. Build group management interface (CRUD operations)
+5. Develop expense management features (CRUD, split types, settlement detection)
+6. Create CSV import interface with file upload and anomaly display
+7. Build import report viewer (JSON and formatted views)
+8. Implement balance dashboard with settlement recommendations
+9. Add responsive design and professional styling
+10. Implement loading states, error handling, and form validation
+11. Connect all components to existing backend APIs
+12. Test end-to-end flows and fix integration issues
+
+Estimated Effort: 20-25 hours
+Folder Structure: src/frontend/ with standard React/Vite layout
+Development Commands:
+  - Backend: python src/backend/app.py (port 5000)
+  - Frontend: npm run dev in src/frontend/ (port 5173 with proxy)
+
+Next Planned Task:
+- Setup frontend project structure (components, pages, services, hooks, context, layouts, routes)
+- Create API service layer
+- Create Auth context
+- Implement protected route system
+- Implement JWT token storage
+
+==================================================
+==================================================
+DATE/TIME
+=========2026-06-14 11:30:00
+
+Milestone: Phase 7 - Frontend UI
+Status: In Progress
+
+Completed Tasks:
+- Documented frontend architecture decision (React + Vite)
+- Created frontend implementation plan
+- Added DECISIONS.md documentation
+
+Files Added:
+- DECISIONS.md
+
+Files Modified:
+- report.txt (updated with planning status)
+
+Tests Run:
+- None yet
+
+Git Commit:
+- docs: document frontend architecture decision (React + Vite) and implementation plan
+
+Next Planned Task:
+- Setup frontend project structure (components, pages, services, hooks, context, layouts, routes)
+- Create API service layer
+- Create Auth context
+- Implement protected route system
+- Implement JWT token storage
+
+==================================================
+==================================================
+DATE/TIME
+=========2026-06-14 12:00:00
+
+Milestone: Phase 7 - Frontend UI
+Status: IN PROGRESS (Checkpoint)
+
+Completed Tasks:
+- Created React + Vite frontend
+- Installed frontend dependencies (react, react-dom)
+- Installed axios for HTTP requests
+- Created AuthContext for authentication state management
+- Created ProtectedRoute component for route protection
+- Set up frontend project structure (components, pages, services, hooks, context, layouts, routes)
+- Created API service layer with axios instance and auth interceptors
+- Verified frontend dev server starts successfully
+
+Files Added:
+- src/frontend/src/services/api.js
+- src/frontend/src/context/AuthContext.jsx
+- src/frontend/src/routes/ProtectedRoute.jsx
+- src/frontend/src/components/ (directory)
+- src/frontend/src/pages/ (directory)
+- src/frontend/src/services/ (directory)
+- src/frontend/src/hooks/ (directory)
+- src/frontend/src/context/ (directory)
+- src/frontend/src/layouts/ (directory)
+- src/frontend/src/routes/ (directory)
+- src/frontend/src/assets/ (directory)
+- src/frontend/src/utils/ (directory)
+
+Files Modified:
+- src/frontend/src/App.jsx (kept default Vite template for now)
+- src/frontend/src/App.css (kept default Vite template for now)
+- src/frontend/src/main.jsx (kept default Vite template for now)
+- src/frontend/src/index.css (kept default Vite template for now)
+- report.txt (updated with checkpoint status)
+
+Tests Run:
+- npm install (dependencies installed successfully)
+- npm run dev (frontend dev server starts on port 5173)
+
+Git Commit:
+- e258701 docs: document frontend architecture decision (React + Vite) and implementation plan
+
+Next Planned Task:
+- Complete Phase 1 frontend architecture
+* Create routing structure with react-router-dom
+* Implement Login page
+* Implement Register page
+* Connect auth pages to backend APIs
+* Implement login/logout/register functionality
+* Add form validation and error handling
+
+==================================================
+==================================================
+DATE/TIME
+=========2026-06-14 13:30:00
+
+Milestone: Phase 7 - Frontend UI
+Status: PAUSED (Checkpoint 2 - Ready for Phase 2)
+
+Completed Tasks:
+- Set up frontend project structure (components, pages, services, hooks, context, layouts, routes)
+- Created API service layer with axios instance and auth interceptors
+- Created AuthContext for authentication state management (with login, register, logout methods)
+- Created ProtectedRoute component for route protection
+- Implemented Login page with email/password form (validation, error handling)
+- Implemented Register page with name/email/password/confirm password form (validation, error handling)
+- Updated App.js with routing system (react-router-dom)
+- Added authentication routes (/login, /register) and protected routes
+- Created Dashboard page placeholder with welcome message and logout functionality
+- Styled application with responsive CSS (auth pages, dashboard, buttons, forms, alerts)
+- Verified frontend builds successfully with Vite (production build)
+
+Files Modified Since Last Checkpoint:
+- src/frontend/src/pages/Login.jsx
+- src/frontend/src/pages/Register.jsx
+- src/frontend/src/pages/Dashboard.jsx
+- src/frontend/src/App.jsx (routing and imports)
+- src/frontend/src/App.css (styling for auth pages, dashboard, responsive design)
+- src/frontend/src/context/AuthContext.jsx (fixed export issue)
+- src/frontend/src/routes/ProtectedRoute.jsx (fixed export issue)
+- Milestones.md (updated checklist progress)
+- report.txt (updated with checkpoint status)
+
+Tests Run:
+- npm install react-router-dom
+- npm run build (frontend production build succeeds)
+
+Git Commit:
+- a54d5ee feat: add authentication pages and dashboard foundation
+
+Phase 2 Ready To Begin:
+* Group management interface (groups list, create/edit/delete group)
+* Connect group pages to backend APIs
+* Add form validation and loading states
+* Expense management interface (expenses list, create/edit/delete expense)
+* Connect expense pages to backend APIs
+* Add form validation, loading states, and split type handling
+
+Note: committed_version.md update pending due to technical encoding issues - core functionality implemented and committed.
+
+==================================================
+==================================================
+DATE/TIME
+=========2026-06-14 14:30:00
+
+Milestone: Phase 7 - Frontend UI
+Status: IN PROGRESS (Phase 2 - Group Management - Completed)
+
+Completed Tasks:
+- Set up frontend project structure (components, pages, services, hooks, context, layouts, routes)
+- Created API service layer with axios instance and auth interceptors
+- Created AuthContext for authentication state management (with login, register, logout methods)
+- Created ProtectedRoute component for route protection
+- Implemented Login page with email/password form (validation, error handling)
+- Implemented Register page with name/email/password/confirm password form (validation, error handling)
+- Updated App.js with routing system (react-router-dom)
+- Added authentication routes (/login, /register) and protected routes
+- Created Dashboard page placeholder with welcome message and logout functionality
+- Styled application with responsive CSS (auth pages, dashboard, buttons, forms, alerts)
+- Verified frontend builds successfully with Vite (production build)
+- Added Groups page (list groups, create group)
+- Added Group Detail page (view group, edit group, delete group)
+- Connected group pages to backend APIs (get groups, create group, update group, delete group, get group members)
+- Added form validation and loading states
+
+Files Added Since Last Checkpoint:
+- src/frontend/src/pages/Groups.jsx
+- src/frontend/src/pages/GroupDetail.jsx
+
+Files Modified Since Last Checkpoint:
+- src/frontend/src/App.jsx (added routes for groups and group detail)
+- src/frontend/src/App.css (minor adjustments for group cards)
+- report.txt (updated with checkpoint status)
+
+Tests Run:
+- npm run build (frontend production build succeeds)
+
+Git Commit:
+- feat: add group management ui
+
+Next Steps:
+* Expense management interface (expenses list, create/edit/delete expense)
+* Connect expense pages to backend APIs
+* Add form validation, loading states, and split type handling
+* CSV import interface
+* Import report viewer
+* Balance dashboard with settlements
+
+==================================================
