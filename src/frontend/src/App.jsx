@@ -10,6 +10,7 @@ import GroupDetail from './pages/GroupDetail';
 import Expenses from './pages/Expenses';
 import Import from './pages/Import';
 import ImportReportViewer from './pages/ImportReportViewer';
+import Balance from './pages/Balance';
 // import Balances from './pages/Balances';
 
 function App() {
@@ -84,10 +85,7 @@ function App() {
             path="/balances"
             element={
               <ProtectedRoute>
-                <div>
-                  <h1>Balances & Settlements</h1>
-                  <p>Balances page coming soon...</p>
-                </div>
+                <Balance />
               </ProtectedRoute>
             }
           />

@@ -1,0 +1,263 @@
+.balance-page {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.balance-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.balance-controls {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-group label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+}
+
+.group-select,
+.date-input {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.group-select:focus,
+.date-input:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.no-group-selected {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.balance-content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 25px;
+  border-bottom: 1px solid #eee;
+}
+
+.card {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.card h3 {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.net-balance {
+  font-size: 28px;
+}
+
+.net-balance.positive {
+  color: #28a745;
+}
+
+.net-balance.negative {
+  color: #dc3545;
+}
+
+.balance-count {
+  font-size: 36px;
+  font-weight: 700;
+  color: #333;
+}
+
+.balances-section,
+.settlements-section {
+  padding: 25px;
+}
+
+.balances-section h2,
+.settlements-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Balances Table */
+.balances-table,
+.settlements-table {
+  margin-top: 20px;
+}
+
+.balances-header,
+.settlements-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px 4px 0 0;
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.balances-body,
+.settlements-body {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+.balance-row,
+.settlement-row {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.balance-row:last-child,
+.settlement-row:last-child {
+  border-bottom: none;
+}
+
+.user-info,
+.from-user,
+.to-user {
+  font-weight: 500;
+}
+
+.balance-amount {
+  font-weight: 600;
+  text-align: right;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.balance-amount.positive {
+  color: #28a745;
+}
+
+.balance-amount.negative {
+  color: #dc3545;
+}
+
+.balance-status {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.status.owes {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status.owed {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.status.settled {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.settlement-amount {
+  text-align: right;
+  font-weight: 600;
+  font-family: 'Courier New', Courier, monospace;
+  color: #28a745;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .balance-page {
+    padding: 15px;
+  }
+
+  .balance-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .balance-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .balances-header,
+  .settlements-header,
+  .balances-body,
+  .settlements-body {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .balance-row,
+  .settlement-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .balance-amount,
+  .settlement-amount {
+    text-align: center;
+  }
+}
