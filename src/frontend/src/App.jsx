@@ -7,8 +7,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Groups from './pages/Groups';
 import GroupDetail from './pages/GroupDetail';
+import Expenses from './pages/Expenses';
 // Import other pages as they are created
-// import Expenses from './pages/Expenses';
 // import Import from './pages/Import';
 // import Balances from './pages/Balances';
 
@@ -60,10 +60,7 @@ function App() {
             path="/expenses"
             element={
               <ProtectedRoute>
-                <div>
-                  <h1>Expenses Management</h1>
-                  <p>Expenses page coming soon...</p>
-                </div>
+                <Expenses />
               </ProtectedRoute>
             }
           />
