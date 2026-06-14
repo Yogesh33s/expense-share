@@ -9,6 +9,7 @@ import Groups from './pages/Groups';
 import GroupDetail from './pages/GroupDetail';
 import Expenses from './pages/Expenses';
 import Import from './pages/Import';
+import ImportReportViewer from './pages/ImportReportViewer';
 // import Balances from './pages/Balances';
 
 function App() {
@@ -68,6 +69,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Import />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/imports/:id"
+            element={
+              <ProtectedRoute>
+                <ImportReportViewer />
               </ProtectedRoute>
             }
           />

@@ -1,0 +1,255 @@
+.import-report-viewer-page {
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.import-report-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.import-report-viewer-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.back-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #545b62;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.import-logs-list {
+  display: grid;
+  gap: 20px;
+}
+
+.import-log-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.import-log-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.import-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.import-log-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.import-log-body {
+  margin-bottom: 20px;
+}
+
+.import-log-body p {
+  margin: 8px 0;
+  color: #495057;
+  font-size: 14px;
+}
+
+.import-log-body p strong {
+  color: #333;
+}
+
+.import-log-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.view-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.view-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.import-report-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.import-report-detail-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.import-report-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-item {
+  text-align: center;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.stat-item h3 {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-item p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.import-report-detail-anomalies {
+  margin-top: 30px;
+}
+
+.import-report-detail-anomalies h2 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.anomalies-list {
+  display: grid;
+  gap: 15px;
+}
+
+.anomaly-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border-left: 4px solid #dc3545;
+}
+
+.anomaly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.anomaly-type {
+  font-weight: 600;
+  color: #495057;
+  background-color: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.anomaly-severity {
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.severity-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.severity-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.severity-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.severity-critical {
+  background-color: #f5c6cb;
+  color: #721c24;
+}
+
+.anomaly-body p {
+  margin: 8px 0;
+  color: #495057;
+  font-size: 14px;
+}
+
+.anomaly-body p strong {
+  color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .import-report-viewer-page {
+    padding: 15px;
+  }
+
+  .import-report-viewer-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .import-log-card {
+    padding: 20px;
+  }
+
+  .import-report-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .import-report-detail-stats {
+    grid-template-columns: 1fr;
+  }
+}
